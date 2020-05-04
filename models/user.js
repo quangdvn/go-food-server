@@ -1,98 +1,152 @@
-const mongoose = require("mongoose");
-const validator = require("validator");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const mongoose = require('mongoose');
+const Joi = require('@hapi/joi');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
-const userSchema = mongoose.Schema({
-  email: {
-    type: String,
-    trim: true,
-    require: true,
-    unique: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email is invalid");
-      }
+const userSchema = mongoose.Schema(
+  {
+    email: {
+      type: String,
+      trim: true,
+      require: true,
+      unique: true,
+      sparse: true,
+    },
+    password: {
+      type: String,
+      trim: true,
+      require: true,
+    },
+    fullname: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    contactNumber: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
     },
   },
-  password: {
-    type: String,
-    trim: true,
-    require: true,
-    validate(value) {
-      if (value.length < 6) {
-        throw new Error("Password is too short");
-      }
-    },
-  },
-  name: {
-    type: String,
-    trim: true,
-  },
-  address: {
-    type: String,
-    trim: true,
-  },
-  phone: {
-    type: String,
-    trim: true,
-    unique: true,
-  },
-  tokens: [
-    {
-      token: {
-        type: String,
-        require: true,
-      },
-    },
-  ],
-});
+  { timestamps: true, collection: 'users' }
+);
 
-userSchema.methods.generateAuthToken = async function () {
-    const user = this
-    const token = jwt.sign({ _id: user._id.toString() },"thisisnewtoken")
-    user.tokens = user.tokens.concat({token})
-
-    await user.save()
-    return token
-}
-
-userSchema.methods.toJSON = function () {
-    const user = this
-    const userObject = user.toObject()
-
-    delete userObject.password
-    delete userObject.tokens
-    return userObject
-}
-
-userSchema.statics.findByCredentials = async function (email, password) {
-    const user = await User.findOne({email : email})
-    if(!user){
-        return undefined
-    }
-    const match = await bcrypt.compare(password, user.password)
-    if(!match){
-        return undefined  
-    }
-
-    return user
-}
-
-userSchema.pre("save", async function (next) {
+//* Middleware before creating new user
+userSchema.pre('save', async function(next) {
+  let user = this;
+  //* only hash the password if it has been modified (or is new)
+  if (!user.isModified('password')) return next();
   try {
-    const user = this;
-    if (user.isModified("password")) {
-      const password = await bcrypt.hash(user.password, 10);
-      user.password = password;
-    }
-
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
     next();
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    next(err);
   }
 });
 
-const User = mongoose.model("User", userSchema);
+//* Some Utils func
+userSchema.methods.generateAuthToken = function() {
+  const token = jwt.sign(
+    { _id: this._id, },
+    'GO_FOOD_APP',
+  );
+  return token;
+};
+
+userSchema.methods.toJSON = function () {
+  const user = this;
+  const userObject = user.toObject();
+
+  delete userObject.password;
+  delete userObject.tokens;
+  return userObject;
+};
+
+userSchema.methods.comparePassword = function(candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.statics.findByCredentials = async function (email, password) {
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return undefined;
+  }
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return undefined;
+  }
+  return user;
+};
+
+const User = mongoose.model('User', userSchema);
+
+function validateSignUpUser(user) {
+  const schema = Joi.object({
+    email: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+      .email(),
+    fullname: Joi.string()
+      .trim()
+      .min(5)
+      .max(50)
+      .required(),
+    password: Joi.string()
+      .min(5)
+      .max(255)
+      .required(),
+    rePassword: Joi.ref('password'),
+  });
+  return schema.validate(user);
+}
+
+function validateLogInUser(user) {
+  const schema = Joi.object({
+    email: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+      .email(),
+    password: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+  });
+  return schema.validate(user);
+}
+
+function validateUpdateUser(user) {
+  const schema = Joi.object({
+    fullname: Joi.string()
+      .trim()
+      .min(5)
+      .max(50),
+    contactNumber: Joi.string()
+      .max(11)
+      .trim()
+      .regex(/^[0-9]{7,10}$/)
+  });
+  return schema.validate(user);
+}
+
+function validateUpdatePassword(user) {
+  const schema = Joi.object({
+    oldPassword: Joi.string()
+      .min(5)
+      .max(255)
+      .required(),
+    newPassword: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+  });
+  return schema.validate(user);
+}
 
 module.exports = User;
