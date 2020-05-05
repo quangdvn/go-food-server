@@ -3,31 +3,63 @@ const Joi = require('@hapi/joi');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-const userSchema = mongoose.Schema(
+const addressSchema = new mongoose.Schema({
+  country: {
+    type: String,
+  },
+  city: {
+    type: String,
+  },
+  latitude: {
+    type: Number,
+  },
+  longitude: {
+    type: Number,
+  }
+});
+
+const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       trim: true,
-      require: true,
+      min: 5,
+      max: 255,
       unique: true,
       sparse: true,
     },
     password: {
       type: String,
       trim: true,
-      require: true,
+      default: '',
+      maxlength: 1024,
+    },
+    avatar: {
+      type: String,
+      default: undefined,
     },
     fullname: {
       type: String,
       trim: true,
+      required: true,
+      minlength: 5,
+      maxlength: 50,
     },
     address: {
+      type: addressSchema,
+    },
+    favoriteFood: {
       type: String,
-      trim: true,
     },
     contactNumber: {
       type: String,
       trim: true,
+      unique: true,
+      sparse: true,
+    },
+    googleId: {
+      type: String,
+      default: undefined,
       unique: true,
       sparse: true,
     },
@@ -36,7 +68,7 @@ const userSchema = mongoose.Schema(
 );
 
 //* Middleware before creating new user
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function (next) {
   let user = this;
   //* only hash the password if it has been modified (or is new)
   if (!user.isModified('password')) return next();
@@ -50,11 +82,8 @@ userSchema.pre('save', async function(next) {
 });
 
 //* Some Utils func
-userSchema.methods.generateAuthToken = function() {
-  const token = jwt.sign(
-    { _id: this._id, },
-    'GO_FOOD_APP',
-  );
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id }, 'GO_FOOD_APP');
   return token;
 };
 
@@ -67,7 +96,7 @@ userSchema.methods.toJSON = function () {
   return userObject;
 };
 
-userSchema.methods.comparePassword = function(candidatePassword) {
+userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
@@ -87,66 +116,54 @@ const User = mongoose.model('User', userSchema);
 
 function validateSignUpUser(user) {
   const schema = Joi.object({
-    email: Joi.string()
-      .min(5)
-      .max(255)
-      .required()
-      .email(),
-    fullname: Joi.string()
-      .trim()
-      .min(5)
-      .max(50)
-      .required(),
-    password: Joi.string()
-      .min(5)
-      .max(255)
-      .required(),
+    email: Joi.string().min(5).max(255).required().email(),
+    fullname: Joi.string().trim().min(5).max(50).required(),
+    password: Joi.string().min(5).max(255).required(),
     rePassword: Joi.ref('password'),
+  });
+  return schema.validate(user);
+}
+
+function validateUserInfo(user) {
+  const schema = Joi.object({
+    address: Joi.required(),
+    favoriteFood: Joi.string().required()
   });
   return schema.validate(user);
 }
 
 function validateLogInUser(user) {
   const schema = Joi.object({
-    email: Joi.string()
-      .min(5)
-      .max(255)
-      .required()
-      .email(),
-    password: Joi.string()
-      .min(5)
-      .max(255)
-      .required()
+    email: Joi.string().min(5).max(255).required().email(),
+    password: Joi.string().min(5).max(255).required(),
   });
   return schema.validate(user);
 }
 
 function validateUpdateUser(user) {
   const schema = Joi.object({
-    fullname: Joi.string()
-      .trim()
-      .min(5)
-      .max(50),
+    fullname: Joi.string().trim().min(5).max(50),
     contactNumber: Joi.string()
       .max(11)
       .trim()
-      .regex(/^[0-9]{7,10}$/)
+      .regex(/^[0-9]{7,10}$/),
   });
   return schema.validate(user);
 }
 
 function validateUpdatePassword(user) {
   const schema = Joi.object({
-    oldPassword: Joi.string()
-      .min(5)
-      .max(255)
-      .required(),
-    newPassword: Joi.string()
-      .min(5)
-      .max(255)
-      .required()
+    oldPassword: Joi.string().min(5).max(255).required(),
+    newPassword: Joi.string().min(5).max(255).required(),
   });
   return schema.validate(user);
 }
 
-module.exports = User;
+module.exports = {
+  User,
+  validateLogInUser,
+  validateSignUpUser,
+  validateUpdateUser,
+  validateUpdatePassword,
+  validateUserInfo
+};

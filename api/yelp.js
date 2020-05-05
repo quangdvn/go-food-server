@@ -9,29 +9,31 @@ const yelpApi = axios.create({
   },
 });
 
-const businessSearch = async (term) => {
+const businessSearch = async (term, latitude, longitude) => {
   try {
     const { data } = await yelpApi.get('/businesses/search', {
       params: {
         term,
-        longitude: 139.68872,
-        latitude: 35.68052,
+        latitude,
+        longitude,
       },
     });
-    return data;
+    return { success: true, data };
   } catch (err) {
-    return err.message;
+    return { success: false, error: err.message };
   }
 };
 
 const businessDetail = async (businessId) => {
   try {
     const { data } = await yelpApi.get(`/businesses/${businessId}`);
-    return data;
+    return { success: true, data };
   } catch (err) {
-    return err.message;
+    return { success: false, error: err.message };
   }
 };
 
-exports.businessSearch = businessSearch;
-exports.businessDetail = businessDetail;
+module.exports = {
+  businessSearch,
+  businessDetail,
+};

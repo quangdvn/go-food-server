@@ -1,20 +1,17 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
 
-const auth = async (req, res, next) => {
+module.exports = function (req, res, next) {
+  const token = req.header('Authorization').replace('Bearer ', '');
+  if (!token)
+    return res
+      .status(401)
+      .send({ success: false, message: 'Access denied. No token provided.' });
+
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
-    const decode = jwt.verify(token, 'thisisnewtoken');
-    const user = await User.findById(decode._id);
-    if (!user) {
-      throw new Error('Please authenticate !!!');
-    }
-
-    req.user = user;
+    const decoded = jwt.verify(token, 'GO_FOOD_APP');
+    req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).send(error);
+    return res.status(400).send({ success: false, message: 'Invalid token.' });
   }
 };
-
-module.exports = auth;
