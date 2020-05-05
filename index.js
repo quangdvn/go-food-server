@@ -6,7 +6,8 @@ const databaseConnection = require('./configs/dbConnect').databaseConnection;
 
 //* Routes import
 const businessApi = require('./routes/services/business');
-const userRouter = require('./routes/auth/user')
+const geoApi = require('./routes/services/geo');
+const userApi = require('./routes/auth/user');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,10 +18,11 @@ app.use(helmet());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(userRouter)
 
 //* Routes use
 app.use('/api/business', businessApi);
+app.use('/api/geo', geoApi);
+app.use('/api/auth', userApi);
 
 app.get('/', (req, res) => {
   res.status(200).send('Welcome to go food server ...');
