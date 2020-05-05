@@ -65,43 +65,50 @@ router.post('/info', auth, async (req, res) => {
       success: true,
       message: 'Update successful !!',
     });
-
   } catch (err) {
     return res.status(400).send({ success: false, message: err.message });
   }
 });
 
-// //* User Log-In to work with Data
-// router.post('/login', async (req, res) => {
-//   const { error } = validateAuth(req.body);
-//   if (error) return res.status(400).send(error.details[0].message);
-//   try {
-//     const user = await User.findOne({ email: req.body.email });
-//     if (!user) return res.status(400).send('Invalid email !!!');
+//* User Log-In to work with Data
+router.post('/login', async (req, res) => {
+  const { error } = validateLogInUser(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-//     const validPassword = await user.comparePassword(req.body.password);
-//     if (!validPassword) return res.status(400).send('Password incorrect !!!');
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).send({ success: false, error: 'Invalid email.' });
 
-//     const token = user.generateAuthToken();
+    const validPassword = await user.comparePassword(password);
+    if (!validPassword)
+      return res
+        .status(400)
+        .send({ success: false, error: 'Invalid password.' });
 
-//     res
-//       .header('x-auth-token', token)
-//       .status(200)
-//       .send(_.pick(user, ['_id', 'username', 'fullname']));
-//   } catch (err) {
-//     return res.status(400).send(err.message);
-//   }
-// });
+    const token = user.generateAuthToken();
 
-// //* User get private Information
-// router.get('/me', auth, async (req, res) => {
-//   try {
-//     const user = await User.findById(req.user._id).select('-password');
-//     res.status(200).send(user);
-//   } catch (err) {
-//     return res.status(400).send(err.message);
-//   }
-// });
+    res.status(200).send({
+      success: true,
+      data: _.pick(user, ['_id']),
+      token,
+    });
+  } catch (err) {
+    return res.status(400).send({ success: false, error: err.message });
+  }
+});
+
+//* User get private Information
+router.get('/me', auth, async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const user = await User.findById(_id).select('-password');
+    res.status(200).send({ success: true, data: user });
+  } catch (err) {
+    return res.status(400).send({ success: false, error: err.message });
+  }
+});
 
 // //* User update current Profile
 // router.put('/updatedetails', auth, async (req, res) => {
