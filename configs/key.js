@@ -4,4 +4,8 @@ module.exports = {
   YelpApiKey:
     'hQhu4SyFEv0BVVe4043ro6YoG1t1-3DarOGe1LAUpcvvVWbzgQOlKQ_BpT674pk5UKX8IKDiSUipLCzMGfd_DMhBYyTZFEN0pY9pgNpHVZCb0FaMX1cXsMcg-XsQXnYx',
   YelpBaseUrl: 'https://api.yelp.com/v3',
+  GeoCodeApiKey: '52767296992437294216x5874',
+  GeoCodeBaseUrl: 'https://geocode.xyz',
+  GeoNamesBaseUrl: 'http://api.geonames.org/', 
+  GeoNamesAPIKey: 'quangdvn'
 };

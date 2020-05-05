@@ -1,20 +1,13 @@
 const express = require('express');
-const auth = require('../../middlewares/auth');
-const { businessSearch, businessDetail } = require('../../api/yelp');
-const { User } = require('../../models/user');
+const { locationToLatLng } = require('../../api/geoCode');
+const { countryToCities } = require('../../api/geoNames');
 
 const router = express.Router();
 
-router.get('/', auth, async (req, res) => {
-  const { _id } = req.user;
+router.get('/code/:location', async (req, res) => {
   try {
-    const {
-      favoriteFood,
-      address: { latitude, longitude },
-    } = await User.findById(_id).select('favoriteFood address');
-
-    const apiData = await businessSearch(favoriteFood, latitude, longitude);
-
+    const { location } = req.params;
+    const apiData = await locationToLatLng(location)
     if (!apiData.success) {
       return res.status(400).send({ success: false, error: apiData.error });
     }
@@ -25,11 +18,10 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/name/:code', async (req, res) => {
   try {
-    const { id } = req.params;
-    const apiData = await businessDetail(id);
-
+    const { code } = req.params;
+    const apiData = await countryToCities(code);
     if (!apiData.success) {
       return res.status(400).send({ success: false, error: apiData.error });
     }
