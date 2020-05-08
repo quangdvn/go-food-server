@@ -33,7 +33,33 @@ const businessDetail = async (businessId) => {
   }
 };
 
+const businessReviews = async (businessId) => {
+  try {
+    const { data } = await yelpApi.get(`/businesses/${businessId}/reviews`);
+    return { success: true, data: data.reviews };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+const autoCompleteSearch = async (inputTerm, latitude, longitude) => {
+  try {
+    const { data } = await yelpApi.get('/autocomplete', {
+      params: {
+        text: inputTerm,
+        latitude,
+        longitude,
+      },
+    });
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
 module.exports = {
   businessSearch,
   businessDetail,
+  businessReviews,
+  autoCompleteSearch
 };

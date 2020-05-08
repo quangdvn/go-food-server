@@ -1,5 +1,6 @@
 const axios = require('axios');
 const GeoCodeBaseUrl = require('../configs/key').GeoCodeBaseUrl;
+const GeoCodeApiKey = require('../configs/key').GeoCodeApiKey;
 
 const geoCodeApi = axios.create({
   baseURL: `${GeoCodeBaseUrl}`,
@@ -13,6 +14,7 @@ const locationToLatLng = async (location) => {
       params: {
         locate: location,
         geoit: 'json',
+        auth: GeoCodeApiKey,
       },
     });
     return { success: true, data: { latitude: latt, longitude: longt } };
