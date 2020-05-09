@@ -18,7 +18,23 @@ const businessSearch = async (term, latitude, longitude) => {
         longitude,
       },
     });
-    return { success: true, data };
+    return { success: true, data: data.businesses };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
+
+const businessSearchByCategory = async (categories, latitude, longitude) => {
+  try {
+    const { data } = await yelpApi.get('/businesses/search', {
+      params: {
+        categories,
+        latitude,
+        longitude,
+        limit: 10,
+      },
+    });
+    return { success: true, data: data.businesses };
   } catch (err) {
     return { success: false, error: err.message };
   }
@@ -59,7 +75,8 @@ const autoCompleteSearch = async (inputTerm, latitude, longitude) => {
 
 module.exports = {
   businessSearch,
+  businessSearchByCategory,
   businessDetail,
   businessReviews,
-  autoCompleteSearch
+  autoCompleteSearch,
 };
