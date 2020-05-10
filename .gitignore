@@ -5,6 +5,7 @@
 
 # seeding files
 test.js
+categories.json
 
 # dependencies
 /node_modules

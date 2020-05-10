@@ -11,7 +11,8 @@ exports.signUpUser = async (req, res) => {
   if (error)
     return res
       .status(400)
-      .send({ success: false, error: error.details[0].message });
+      .send({ success: false, error: 'Something went wrong ..' });
+  // .send({ success: false, error: error.details[0].message });
 
   try {
     const { password, rePassword } = req.body;
@@ -67,7 +68,10 @@ exports.postUserInfo = async (req, res) => {
 
 exports.logInUser = async (req, res) => {
   const { error } = validateLogInUser(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error)
+    return res
+      .status(400)
+      .send({ success: false, error: 'Something went wrong ..' });
 
   const { email, password } = req.body;
   try {
