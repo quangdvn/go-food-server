@@ -6,6 +6,7 @@ const databaseConnection = require('./configs/dbConnect').databaseConnection;
 
 //* Routes import
 const businessApi = require('./routes/services/business');
+const eventApi = require('./routes/services/event');
 const geoApi = require('./routes/services/geo');
 const userApi = require('./routes/auth/user');
 
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //* Routes use
 app.use('/api/business', businessApi);
+app.use('/api/event', eventApi);
 app.use('/api/geo', geoApi);
 app.use('/api/auth', userApi);
 
