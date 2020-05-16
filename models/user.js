@@ -15,7 +15,7 @@ const addressSchema = new mongoose.Schema({
   },
   longitude: {
     type: Number,
-  }
+  },
 });
 
 const userSchema = new mongoose.Schema(
@@ -56,6 +56,18 @@ const userSchema = new mongoose.Schema(
       trim: true,
       unique: true,
       sparse: true,
+    },
+    favoritePlaces: {
+      type: Number,
+      default: 0,
+    },
+    tryOutPlaces: {
+      type: Number,
+      default: 0,
+    },
+    bookmarkPlaces: {
+      type: Number,
+      default: 0,
     },
     googleId: {
       type: String,
@@ -127,7 +139,7 @@ function validateSignUpUser(user) {
 function validateUserInfo(user) {
   const schema = Joi.object({
     address: Joi.required(),
-    favoriteFood: Joi.string().required()
+    favoriteFood: Joi.string().required(),
   });
   return schema.validate(user);
 }
@@ -165,5 +177,5 @@ module.exports = {
   validateSignUpUser,
   validateUpdateUser,
   validateUpdatePassword,
-  validateUserInfo
+  validateUserInfo,
 };
