@@ -100,7 +100,7 @@ exports.logInUser = async (req, res) => {
 exports.getUserInfo = async (req, res) => {
   const { _id } = req.user;
   try {
-    const user = await User.findById(_id).select('-password');
+    const user = await User.findById(_id).select('-password -__v -_id -createdAt -updatedAt -address._id');
     res.status(200).send({ success: true, data: user });
   } catch (err) {
     return res.status(400).send({ success: false, error: err.message });

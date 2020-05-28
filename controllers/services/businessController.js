@@ -51,8 +51,8 @@ exports.getByCategories = async (req, res) => {
 exports.getBusinessDetail = async (req, res) => {
   try {
     const { id } = req.params;
-    const apiData = await businessDetail(id);
-    const subData = await businessReviews(id);
+    const apiData = await businessDetail(encodeURI(id));
+    const subData = await businessReviews(encodeURI(id));
 
     if (!apiData.success) {
       return res.status(400).send({ success: false, error: apiData.error });

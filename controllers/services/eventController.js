@@ -63,7 +63,7 @@ exports.getEventDetail = async (req, res) => {
 
     return res.status(200).send({
       success: true,
-      data: { details: apiData },
+      data: apiData.data,
     });
   } catch (err) {
     return res.status(400).send({ success: false, error: err });
