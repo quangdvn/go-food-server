@@ -34,7 +34,7 @@ exports.signUpUser = async (req, res) => {
 
     const token = newUser.generateAuthToken();
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       data: _.pick(newUser, ['_id']),
       token,
@@ -57,7 +57,7 @@ exports.postUserInfo = async (req, res) => {
 
     await User.findByIdAndUpdate(_id, { address, favoriteFood }, { new: true });
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: 'Update successful !!',
     });
@@ -87,7 +87,7 @@ exports.logInUser = async (req, res) => {
 
     const token = user.generateAuthToken();
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       data: _.pick(user, ['_id']),
       token,
@@ -100,8 +100,13 @@ exports.logInUser = async (req, res) => {
 exports.getUserInfo = async (req, res) => {
   const { _id } = req.user;
   try {
-    const user = await User.findById(_id).select('-password -__v -_id -createdAt -updatedAt -address._id');
-    res.status(200).send({ success: true, data: user });
+    const user = await User.findById(_id)
+      .populate({
+        path: 'bookmarks',
+        select: '-__v -_id -createdAt -updatedAt -userId',
+      })
+      .select('-password -__v -createdAt -updatedAt');
+    return res.status(200).send({ success: true, data: user });
   } catch (err) {
     return res.status(400).send({ success: false, error: err.message });
   }

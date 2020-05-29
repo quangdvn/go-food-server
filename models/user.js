@@ -3,6 +3,8 @@ const Joi = require('@hapi/joi');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+// const ObjectId = mongoose.Schema.Types.ObjectId;
+
 const addressSchema = new mongoose.Schema({
   country: {
     type: String,
@@ -25,6 +27,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
       min: 5,
       max: 255,
+      unique: true,
+      sparse: true,
+    },
+    googleId: {
+      type: String,
+      default: undefined,
       unique: true,
       sparse: true,
     },
@@ -57,24 +65,19 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
-    favoritePlaces: {
-      type: Number,
-      default: 0,
-    },
-    tryOutPlaces: {
-      type: Number,
-      default: 0,
-    },
-    bookmarkPlaces: {
-      type: Number,
-      default: 0,
-    },
-    googleId: {
-      type: String,
-      default: undefined,
-      unique: true,
-      sparse: true,
-    },
+    bookmarkPlaces: [{ type: String, ref: 'Bookmark' }],
+    // favoritePlaces: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // tryOutPlaces: {
+    //   type: Number,
+    //   default: 0,
+    // },
+    // bookmarkPlaces: {
+    //   type: Number,
+    //   default: 0,
+    // },
   },
   { timestamps: true, collection: 'users' }
 );
@@ -123,6 +126,15 @@ userSchema.statics.findByCredentials = async function (email, password) {
   }
   return user;
 };
+
+userSchema.virtual('bookmarks', {
+  ref: 'Bookmark',
+  localField: 'bookmarkPlaces',
+  foreignField: 'restaurantId',
+});
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 const User = mongoose.model('User', userSchema);
 

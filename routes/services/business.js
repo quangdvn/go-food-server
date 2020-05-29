@@ -6,6 +6,8 @@ const {
   getBusinessDetail,
   getAutoComplete,
   searchBusiness,
+  addBookmark,
+  removeBookmark,
 } = require('../../controllers/services/businessController');
 
 const router = express.Router();
@@ -19,5 +21,9 @@ router.get('/:id', getBusinessDetail);
 router.get('/autocomplete/:inputTerm', auth, getAutoComplete);
 
 router.get('/search/:inputTerm', auth, searchBusiness);
+
+router.put('/:id/bookmark/', auth, addBookmark);
+
+router.delete('/:id/bookmark/', auth, removeBookmark);
 
 module.exports = router;
