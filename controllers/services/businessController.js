@@ -191,3 +191,22 @@ exports.removeBookmark = async (req, res) => {
     return res.status(400).send({ success: false, error: err.message });
   }
 };
+
+exports.getBookmarkList = async (req, res) => {
+  try {
+    const { _id: userId } = req.user;
+    const { bookmarkPlaces } = await User.findById(userId);
+
+    const data = await Bookmark.find({
+      restaurantId: bookmarkPlaces,
+      userId: userId,
+    }).select('-_id -createdAt -updatedAt -__v');
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (err) {
+    return res.status(400).send({ success: false, error: err.message });
+  }
+};

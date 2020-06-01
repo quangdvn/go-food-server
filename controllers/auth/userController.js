@@ -101,10 +101,10 @@ exports.getUserInfo = async (req, res) => {
   const { _id } = req.user;
   try {
     const user = await User.findById(_id)
-      .populate({
-        path: 'bookmarks',
-        select: '-__v -_id -createdAt -updatedAt -userId',
-      })
+      // .populate({
+      //   path: 'bookmarks',
+      //   select: '-__v -_id -createdAt -updatedAt -userId',
+      // })
       .select('-password -__v -createdAt -updatedAt');
     return res.status(200).send({ success: true, data: user });
   } catch (err) {

@@ -6,6 +6,7 @@ const {
   getBusinessDetail,
   getAutoComplete,
   searchBusiness,
+  getBookmarkList,
   addBookmark,
   removeBookmark,
 } = require('../../controllers/services/businessController');
@@ -21,6 +22,8 @@ router.get('/:id', getBusinessDetail);
 router.get('/autocomplete/:inputTerm', auth, getAutoComplete);
 
 router.get('/search/:inputTerm', auth, searchBusiness);
+
+router.get('/bookmarks/detail', auth, getBookmarkList);
 
 router.put('/:id/bookmark/', auth, addBookmark);
 
