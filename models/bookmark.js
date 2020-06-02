@@ -39,21 +39,13 @@ const bookmarkSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    distance: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true, collection: 'bookmarks' }
 );
-
-// userSchema.statics.findByCredentials = async function (email, password) {
-//   const user = await User.findOne({ email: email });
-//   if (!user) {
-//     return undefined;
-//   }
-//   const match = await bcrypt.compare(password, user.password);
-//   if (!match) {
-//     return undefined;
-//   }
-//   return user;
-// };
 
 const Bookmark = mongoose.model('Bookmark', bookmarkSchema);
 
@@ -65,6 +57,7 @@ function validateBookmark(bookmark) {
     price: Joi.string().required(),
     categories: Joi.string().required(),
     address: Joi.string().required(),
+    distance: Joi.string().required(),
   });
   return schema.validate(bookmark);
 }

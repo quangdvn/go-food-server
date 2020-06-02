@@ -132,6 +132,7 @@ exports.addBookmark = async (req, res) => {
       price,
       categories,
       address,
+      distance
     } = req.body;
 
     await User.findByIdAndUpdate(
@@ -151,6 +152,7 @@ exports.addBookmark = async (req, res) => {
       price,
       categories,
       address,
+      distance
     });
 
     await newBookmarkPlace.save();
