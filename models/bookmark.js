@@ -57,7 +57,7 @@ function validateBookmark(bookmark) {
     price: Joi.string().required(),
     categories: Joi.string().required(),
     address: Joi.string().required(),
-    distance: Joi.string().required(),
+    distance: Joi.number().required(),
   });
   return schema.validate(bookmark);
 }
