@@ -190,11 +190,11 @@ function validateUpdatePassword(user) {
 
 function validateUpdateUser(user) {
   const schema = Joi.object({
-    dob: Joi.string().trim().min(5).max(50),
     contactNumber: Joi.string()
       .max(11)
       .trim()
       .regex(/^[0-9]{7,10}$/),
+    dob: Joi.string().trim().min(5).max(50),
     gender: Joi.string().trim(),
   });
   return schema.validate(user);

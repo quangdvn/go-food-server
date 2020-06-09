@@ -4,6 +4,7 @@ const {
   validateLogInUser,
   validateSignUpUser,
   validateUserInfo,
+  validateUpdateUser,
 } = require('../../models/user');
 
 exports.signUpUser = async (req, res) => {
@@ -107,6 +108,47 @@ exports.getUserInfo = async (req, res) => {
       // })
       .select('-password -__v -createdAt -updatedAt');
     return res.status(200).send({ success: true, data: user });
+  } catch (err) {
+    return res.status(400).send({ success: false, error: err.message });
+  }
+};
+
+exports.updateUserInfo = async (req, res) => {
+  const { error } = validateUpdateUser(req.body);
+  if (error)
+    return res
+      .status(400)
+      .send({ success: false, error: error.details[0].message });
+
+  try {
+    const { _id } = req.user;
+    const { dob, contactNumber, gender } = req.body;
+
+    const {
+      dob: curDob,
+      contactNumber: curContactNumber,
+      gender: curGender,
+    } = await User.findById(_id).select('dob contactNumber gender');
+
+    console.log(curDob, curContactNumber, curGender);
+
+    let updateDob = dob || curDob;
+    let updateContact = contactNumber || curContactNumber;
+    let updateGender = gender || curGender;
+
+    console.log(updateDob, updateContact, updateGender);
+
+    await User.findOneAndUpdate(
+      { _id: _id },
+      { dob: updateDob, contactNumber: updateContact, gender: updateGender },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Update successful',
+      updateData: { updateDob, updateContact, updateGender },
+    });
   } catch (err) {
     return res.status(400).send({ success: false, error: err.message });
   }

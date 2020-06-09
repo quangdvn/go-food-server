@@ -5,6 +5,7 @@ const {
   logInUser,
   postUserInfo,
   getUserInfo,
+  updateUserInfo,
 } = require('../../controllers/auth/userController');
 
 const router = express.Router();
@@ -21,6 +22,9 @@ router.post('/login', logInUser);
 router.get('/me', auth, getUserInfo);
 
 // //* User update current Profile
+router.put('/update', auth, updateUserInfo);
+
+
 // router.put('/updatedetails', auth, async (req, res) => {
 //   const { error } = validateUpdateUser(req.body);
 //   if (error) return res.status(400).send(error.details[0].message);
