@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const logger = require('morgan');
 const databaseConnection = require('./configs/dbConnect').databaseConnection;
+require('dotenv').config()
 
 //* Routes import
 const businessApi = require('./routes/services/business');

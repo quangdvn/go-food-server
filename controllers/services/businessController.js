@@ -132,7 +132,7 @@ exports.addBookmark = async (req, res) => {
       price,
       categories,
       address,
-      distance
+      distance,
     } = req.body;
 
     await User.findByIdAndUpdate(
@@ -152,7 +152,7 @@ exports.addBookmark = async (req, res) => {
       price,
       categories,
       address,
-      distance
+      distance,
     });
 
     await newBookmarkPlace.save();
@@ -212,3 +212,7 @@ exports.getBookmarkList = async (req, res) => {
     return res.status(400).send({ success: false, error: err.message });
   }
 };
+
+exports.addReservation = async (req, res) => {};
+
+exports.getReservationList = async (req, res) => {};

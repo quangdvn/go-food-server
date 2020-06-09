@@ -73,7 +73,18 @@ const userSchema = new mongoose.Schema(
     favoriteFood: {
       type: String,
     },
-    bookmarkPlaces: [{ type: String, ref: 'Bookmark' }],
+    bookmarkPlaces: [
+      {
+        type: String,
+        ref: 'Bookmark',
+      },
+    ],
+    reactedEvents: [
+      {
+        type: String,
+        ref: 'Event',
+      },
+    ],
   },
   { timestamps: true, collection: 'users' }
 );

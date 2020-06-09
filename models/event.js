@@ -10,37 +10,12 @@ const eventSchema = new mongoose.Schema(
       type: ObjectId,
       required: true,
     },
-    restaurantId: {
+    eventId: {
       type: String,
       required: true,
     },
-    restaurantName: {
+    timeStart: {
       type: String,
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    imageUrl: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: String,
-      required: true,
-    },
-    categories: {
-      type: String,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    distance: {
-      type: Number,
       required: true,
     },
   },
@@ -49,20 +24,14 @@ const eventSchema = new mongoose.Schema(
 
 const Event = mongoose.model('Event', eventSchema);
 
-function validateEvent(bookmark) {
+function validateEvent(event) {
   const schema = Joi.object({
-    restaurantName: Joi.string().required(),
-    rating: Joi.number().required(),
-    imageUrl: Joi.string().required(),
-    price: Joi.string().required(),
-    categories: Joi.string().required(),
-    address: Joi.string().required(),
-    distance: Joi.number().required(),
+    timeStart: Joi.string().required(),
   });
-  return schema.validate(bookmark);
+  return schema.validate(event);
 }
 
 module.exports = {
-  Bookmark,
-  validateBookmark,
+  Event,
+  validateEvent,
 };

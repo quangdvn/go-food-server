@@ -1,49 +1,54 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
-Joi.objectId = require('joi-objectid')(Joi);
+
+const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const notificationSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: true,
-    },
-    restaurantId: {
+    userId: {
       type: ObjectId,
       required: true,
     },
-    reservationTime: {
-      type: Number,
+    type: {
+      type: String,
       required: true,
-      default: 0,
     },
-    reservationNumber: {
+    time: {
+      type: String,
+      required: true,
+    },
+    attenders: {
+      type: Number,
+      default: 0,
+      required: true,
+    },
+    fees: {
       type: Number,
       default: 0,
       required: true,
     },
     expireAt: {
-      type: Date, 
-      default: Date.now, 
-      expires: 7200
-    }
+      type: Date,
+      default: Date.now,
+      expires: 60,
+    },
   },
-  { timestamps: true, collection: 'reservations' }
+  { timestamps: true, collection: 'notifications' }
 );
 
-const Reservation = mongoose.model('Reservation', reservationSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
 
-function validateReservation(reservation) {
+function validateNotification(notification) {
   const schema = Joi.object({
-    name: Joi.string().required().email(),
-    restaurantId: Joi.objectId().required(),
-    reservationTime: Joi.number().required(),
-    reservationNumber: Joi.number().required(),
+    type: Joi.string().required(),
+    attenders: Joi.string().required(),
+    time: Joi.string().required(),
+    fees: Joi.number().required(),
   });
-  return schema.validate(reservation);
+  return schema.validate(notification);
 }
 
 module.exports = {
-  Reservation,
-  validateReservation,
+  Notification,
+  validateNotification,
 };
