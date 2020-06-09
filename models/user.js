@@ -30,17 +30,17 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
-    googleId: {
-      type: String,
-      default: undefined,
-      unique: true,
-      sparse: true,
-    },
     password: {
       type: String,
       trim: true,
       default: '',
       maxlength: 1024,
+    },
+    pushToken: {
+      type: String,
+      default: undefined,
+      unique: true,
+      sparse: true,
     },
     avatar: {
       type: String,
@@ -53,11 +53,9 @@ const userSchema = new mongoose.Schema(
       minlength: 5,
       maxlength: 50,
     },
-    address: {
-      type: addressSchema,
-    },
-    favoriteFood: {
+    dob: {
       type: String,
+      default: undefined,
     },
     contactNumber: {
       type: String,
@@ -65,19 +63,17 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+    gender: {
+      type: String,
+      default: undefined,
+    },
+    address: {
+      type: addressSchema,
+    },
+    favoriteFood: {
+      type: String,
+    },
     bookmarkPlaces: [{ type: String, ref: 'Bookmark' }],
-    // favoritePlaces: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // tryOutPlaces: {
-    //   type: Number,
-    //   default: 0,
-    // },
-    // bookmarkPlaces: {
-    //   type: Number,
-    //   default: 0,
-    // },
   },
   { timestamps: true, collection: 'users' }
 );
@@ -114,6 +110,15 @@ userSchema.methods.toJSON = function () {
 userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+userSchema.methods.getUserPushToken = function () {
+  const pushToken = this.pushToken;
+  return pushToken;
+};
+
+//* Use method on individual documents if you want to manipulate the individual document
+//* like adding tokens etc.
+//* Use the statics approach if you want query the whole collection.
 
 userSchema.statics.findByCredentials = async function (email, password) {
   const user = await User.findOne({ email: email });
@@ -179,6 +184,18 @@ function validateUpdatePassword(user) {
   const schema = Joi.object({
     oldPassword: Joi.string().min(5).max(255).required(),
     newPassword: Joi.string().min(5).max(255).required(),
+  });
+  return schema.validate(user);
+}
+
+function validateUpdateUser(user) {
+  const schema = Joi.object({
+    dob: Joi.string().trim().min(5).max(50),
+    contactNumber: Joi.string()
+      .max(11)
+      .trim()
+      .regex(/^[0-9]{7,10}$/),
+    gender: Joi.string().trim(),
   });
   return schema.validate(user);
 }
