@@ -27,14 +27,6 @@ const notificationSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    expiresAt: {
-      type: Date,
-      default: Date.now(),
-      index: {
-        sparse: true,
-        expires: '2h',
-      },
-    },
   },
   { timestamps: true, collection: 'notifications' }
 );
