@@ -41,10 +41,10 @@ const Notification = mongoose.model('Notification', notificationSchema);
 function validateNotification(notification) {
   const schema = Joi.object({
     type: Joi.string().required(),
-    attenders: Joi.string().required(),
+    attenders: Joi.number().required(),
     time: Joi.string().required(),
     fees: Joi.number().required(),
-  });
+  }).options({ stripUnknown: true });
   return schema.validate(notification);
 }
 

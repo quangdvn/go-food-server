@@ -14,7 +14,7 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    timeStart: {
+    time: {
       type: String,
       required: true,
     },
@@ -26,8 +26,8 @@ const Event = mongoose.model('Event', eventSchema);
 
 function validateEvent(event) {
   const schema = Joi.object({
-    timeStart: Joi.string().required(),
-  });
+    time: Joi.string().required(),
+  }).options({ stripUnknown: true });
   return schema.validate(event);
 }
 

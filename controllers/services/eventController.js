@@ -78,20 +78,24 @@ exports.getEventDetail = async (req, res) => {
 exports.addEvent = async (req, res) => {
   const { error: eventError } = validateEvent(req.body);
   if (eventError)
-    return res
-      .status(400)
-      .send({ success: false, error: eventError.details[0].message });
+    return res.status(400).send({
+      success: false,
+      error: eventError.details[0].message,
+      type: 'event',
+    });
 
   const { error: notiError } = validateNotification(req.body);
   if (notiError)
-    return res
-      .status(400)
-      .send({ success: false, error: notiError.details[0].message });
+    return res.status(400).send({
+      success: false,
+      error: notiError.details[0].message,
+      type: 'notification',
+    });
 
   try {
     const { _id: userId } = req.user;
     const { id: eventId } = req.params;
-    const { timeStart, type, attenders, time, fees } = req.body;
+    const { type, attenders, time, fees } = req.body;
 
     await User.findByIdAndUpdate(
       userId,
@@ -104,7 +108,7 @@ exports.addEvent = async (req, res) => {
     const newEvent = new Event({
       userId,
       eventId,
-      timeStart,
+      time,
     });
 
     await newEvent.save();

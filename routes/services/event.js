@@ -18,6 +18,6 @@ router.get('/:id', getEventDetail);
 
 router.put('/:id/interested', auth, addEvent);
 
-router.get('/:id/uninterested', auth, removeEvent);
+router.put('/:id/uninterested', auth, removeEvent);
 
 module.exports = router;
