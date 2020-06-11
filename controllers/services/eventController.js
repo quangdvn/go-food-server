@@ -141,7 +141,7 @@ exports.removeEvent = async (req, res) => {
     await User.findByIdAndUpdate(
       userId,
       {
-        $push: { reactedEvents: [eventId] },
+        $addToSet: { reactedEvents: [eventId] },
       },
       { new: true }
     );

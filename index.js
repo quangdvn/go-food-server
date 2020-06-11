@@ -8,6 +8,7 @@ require('dotenv').config()
 //* Routes import
 const businessApi = require('./routes/services/business');
 const eventApi = require('./routes/services/event');
+const notificationApi = require('./routes/services/notification');
 const geoApi = require('./routes/services/geo');
 const userApi = require('./routes/auth/user');
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 //* Routes use
 app.use('/api/business', businessApi);
 app.use('/api/event', eventApi);
+app.use('/api/noti', notificationApi);
 app.use('/api/geo', geoApi);
 app.use('/api/auth', userApi);
 

@@ -27,10 +27,13 @@ const notificationSchema = new mongoose.Schema(
       default: 0,
       required: true,
     },
-    expireAt: {
+    expiresAt: {
       type: Date,
-      default: Date.now,
-      expires: 7200,
+      default: Date.now(),
+      index: {
+        sparse: true,
+        expires: '2h',
+      },
     },
   },
   { timestamps: true, collection: 'notifications' }
