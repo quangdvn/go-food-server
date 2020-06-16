@@ -95,7 +95,7 @@ exports.addEvent = async (req, res) => {
   try {
     const { _id: userId } = req.user;
     const { id: eventId } = req.params;
-    const { type, attenders, time, fees } = req.body;
+    const { imageUrl, type, attenders, time, fees } = req.body;
 
     await User.findByIdAndUpdate(
       userId,
@@ -115,6 +115,7 @@ exports.addEvent = async (req, res) => {
 
     const newNotification = new Notification({
       userId,
+      imageUrl,
       type,
       time,
       attenders,

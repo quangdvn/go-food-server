@@ -9,6 +9,10 @@ const notificationSchema = new mongoose.Schema(
       type: ObjectId,
       required: true,
     },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
     type: {
       type: String,
       required: true,
@@ -35,6 +39,7 @@ const Notification = mongoose.model('Notification', notificationSchema);
 
 function validateNotification(notification) {
   const schema = Joi.object({
+    imageUrl: Joi.string().required(),
     type: Joi.string().required(),
     attenders: Joi.number().required(),
     time: Joi.string().required(),
